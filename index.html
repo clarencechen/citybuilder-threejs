@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ThreeJs Citybuilder</title>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+		<link href='https://fonts.googleapis.com/css?family=Dancing+Script:700' rel='stylesheet' type='text/css'>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+		<script src="dependencies/jquery.mousewheel.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.js"></script>
+		<style>
+			body {margin: 0; font-family: 'Dancing Script' cursive; color: white; display: flex; flex-direction:column; justify-content:flex-end;}
+			canvas {width: 100%;}
+			#ui {display: table; width: 100%; position: absolute; top: 0px} 
+			div.row {display: table-row;}
+			div.row > div {display: table-cell; min-width: 100px; text-align: center;}
+		</style>
+	</head>
+	<body>
+	<script src="main.js"></script>
+	<script src="road.js"></script>
+	<script src="building.js"></script>
+	<script src="zone.js"></script>
+	<script src="city.js"></script>
+	<script src="infrastructure.js"></script>
+	<script src="terrain.js"></script>
+	<script src="growable.js"></script>
+	<div id="ui">
+	<div class="row">
+		<div id="bridge">Roads flush with terrain</div>
+		<div id="funds">Funds: $0</div>
+		<div id="calendar">Current Year: 0</div>
+		<div id="population">Population: 0</div>
+	<div class="row">
+
+	</div>
+	</body>
+</html>
