@@ -11,9 +11,16 @@
 		<style>
 			body {margin: 0; font-family: 'Dancing Script' cursive; color: white; display: flex; flex-direction:column; justify-content:flex-end;}
 			canvas {width: 100%;}
-			#ui {display: table; width: 100%; position: absolute; top: 0px} 
+			#status {display: table; width: 90%; position: absolute; top: 0px; left: 10%; text-align: center;}
 			div.row {display: table-row;}
-			div.row > div {display: table-cell; min-width: 100px; text-align: center;}
+			div.first {display: table-cell}
+
+			#menu {display: block; width: 10%; min-width: 100px; position: absolute; left: 0px; top: 0px; margin: auto;}
+			#menu div {background-color: #808080; border: 2px; border-color: black}
+			#menu div:hover {background-color: black}
+			div.submenu {display: block; height: 100%;}
+			div.entry {display: none; position: fixed; left: 100%; top: 0; overflow: auto; margin: auto;}
+			div.submenu:hover div.entry {display: block;}
 		</style>
 	</head>
 	<body>
@@ -25,14 +32,63 @@
 	<script src="infrastructure.js"></script>
 	<script src="terrain.js"></script>
 	<script src="growable.js"></script>
-	<div id="ui">
-	<div class="row">
-		<div id="bridge">Roads flush with terrain</div>
-		<div id="funds">Funds: $0</div>
-		<div id="calendar">Current Year: 0</div>
-		<div id="population">Population: 0</div>
-	<div class="row">
-
+	<div id="status">
+		<div class="row">
+			<div class="first" id="bridge"></div>
+			<div class="first" id="funds"></div>
+			<div class="first" id="calendar"></div>
+			<div class="first" id="population"></div>
+			<div class="first" id="speed"></div>
+		</div>
+	</div>
+	<div id="menu">
+		<div class="submenu" id="zone">
+			Zoning Tools
+			<div class="entry" id="z">Low Resid. z</div>
+			<div class="entry" id="a">Med. Resid. a</div>
+			<div class="entry" id="q">High Resid. q</div>
+			<div class="entry" id="Z">Low Comm. Z</div>
+			<div class="entry" id="A">Med. Comm. A</div>
+			<div class="entry" id="q">High Comm. Q</div>
+			<div class="entry" id="x">Low Office x</div>
+			<div class="entry" id="s">Med. Office s</div>
+			<div class="entry" id="w">High Offfice w</div>
+			<div class="entry" id="X">Low PDR X</div>
+			<div class="entry" id="S">Med. PDR S</div>
+			<div class="entry" id="W">Manufacturing W</div>
+		</div>
+		<div class="submenu" id="util">
+			Utilities
+			
+		</div>
+		<div class="submenu" id="plop">
+			Civics	
+			<div class="entry" id="f">Fire Station f</div>
+			<div class="entry" id="g">Plaza g</div>
+			<div class="entry" id="h">Hospital h</div>
+			<div class="entry" id="j">High School j</div>
+			<div class="entry" id="k">Elementary School k</div>
+			<div class="entry" id="l">Libary l</div>
+			<div class="entry" id="m">Museum m</div>
+			<div class="entry" id="n">City College n</div>
+			<div class="entry" id="p">Police Staion p</div>
+		</div>
+		<div class="submenu" id="road">
+			Transportation
+			<div class="entry" id="r">Two-Lane Road r</div>
+			<div class="entry" id="R">Four-Lane Road R</div>
+		</div>
+		<div class="submenu" id="terraform">
+			Terraforming
+			<div class="entry" id="comma">Raise Terrain ,</div>
+			<div class="entry" id="period">Lower Terrain .</div>
+		</div>
+		<div class="submenu" id="destroy">
+			Demolish/Dezone
+			<div class="entry" id="backt">Demolish `</div>
+			<div class="entry" id="tilde">Dezone ~</div>
+		</div>
+		<div class="submenu" id="query">Query</div>
 	</div>
 	</body>
 </html>

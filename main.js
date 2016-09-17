@@ -62,6 +62,7 @@ function init() {
 	raycaster = new THREE.Raycaster();
 	city = new City();
 
+	setUpStatusDivs();
 	setUpControlListeners();
 	window.addEventListener('resize', onWindowResize, false);
 	render();
@@ -185,7 +186,7 @@ function endOperation() {
 }
 
 function simulate() {
-	if(simSpeed !== 0)
+	if(simSpeed)
 		counter = ((counter/simSpeed)|0)*simSpeed;
 	counter += simSpeed;
 	for(var i = 0; i < simSpeed; ++i)
@@ -193,6 +194,14 @@ function simulate() {
 	if(counter % 256 === 0)
 		city.budget();
 	$('#calendar').text('Current Year: ' + ((counter/256)|0));
+}
+
+function setUpStatusDivs() {
+	$('#bridge').text("Roads flush with terrain");
+	$('#funds').text("Funds: $0");
+	$('#calendar').text("Current Year: 0");
+	$('#population').text("Population: 0");
+	$('#speed').text("Simulation Speed: 1x");
 }
 
 function setUpControlListeners() {
@@ -224,7 +233,7 @@ function setUpControlListeners() {
 			break;
 		}
 	});
-	$('canvas').mouseup(function(e) {
+	$(document).mouseup(function(e) {
 		switch(e.which){
 		case 1:
 			leftButton = false;
@@ -382,10 +391,22 @@ function setUpControlListeners() {
 				else
 					$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
 				break;
-			case 32: // Space
-//				addObjectToScene();
+			case 45: // - (decrease simulation speed)
+				if(simSpeed > 0 && simSpeed <=4)
+				{
+					simSpeed--;
+					$('#speed').text("Simulation Speed: " + simSpeed + "x");
+				}
+				break;
+			case 61: // + (increase simulation speed)
+				if(simSpeed >= 0 && simSpeed < 4)
+				{
+					simSpeed++;
+					$('#speed').text("Simulation Speed: " + simSpeed + "x");
+				}
 			default:
 				break;
+//				addObjectToScene();
 			}
 		}
 	});
