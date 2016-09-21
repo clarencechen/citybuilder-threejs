@@ -9,17 +9,18 @@
 		<script src="dependencies/jquery.mousewheel.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.js"></script>
 		<style>
-			body {margin: 0; font-family: 'Dancing Script' cursive; color: white; display: flex; flex-direction:column; justify-content:flex-end;}
+			body {margin: 0; font-family: sans-serif; font-size: 16px; color: white; display: flex; flex-direction:column; justify-content:flex-end;}
 			canvas {width: 100%;}
-			#status {display: table; width: 90%; position: absolute; top: 0px; left: 10%; text-align: center;}
+			#hub {width: 100%}
+			#status {display: table; width: 80%; position: absolute; top: 0px; left: 20%; text-align: center;}
 			div.row {display: table-row;}
 			div.first {display: table-cell}
 
-			#menu {display: block; width: 10%; min-width: 100px; position: absolute; left: 0px; top: 0px; margin: auto;}
-			#menu div {background-color: #808080; border: 2px; border-color: black}
+			#menu {display: block; width: 10%; min-width: 100px; height: 100%; position: absolute; left: 0px; top: 0px; text-align: center;}
+			#menu div {background-color: #808080;}
 			#menu div:hover {background-color: black}
-			div.submenu {display: block; height: 100%;}
-			div.entry {display: none; position: fixed; left: 100%; top: 0; overflow: auto; margin: auto;}
+			div.submenu {display: block; position: relative; height: 5%; min-height: 16px; max-height: 5%;}
+			div.entry {display: none; position: relative; width: 100%; height: 100%; left: 100%; top: -16px;}
 			div.submenu:hover div.entry {display: block;}
 		</style>
 	</head>
@@ -32,63 +33,65 @@
 	<script src="infrastructure.js"></script>
 	<script src="terrain.js"></script>
 	<script src="growable.js"></script>
-	<div id="status">
-		<div class="row">
-			<div class="first" id="bridge"></div>
-			<div class="first" id="funds"></div>
-			<div class="first" id="calendar"></div>
-			<div class="first" id="population"></div>
-			<div class="first" id="speed"></div>
+	<div id="hub">
+		<div id="status">
+			<div class="row">
+				<div class="first" id="bridge"></div>
+				<div class="first" id="funds"></div>
+				<div class="first" id="calendar"></div>
+				<div class="first" id="population"></div>
+				<div class="first" id="speed"></div>
+			</div>
 		</div>
-	</div>
-	<div id="menu">
-		<div class="submenu" id="zone">
-			Zoning Tools
-			<div class="entry" id="z">Low Resid. z</div>
-			<div class="entry" id="a">Med. Resid. a</div>
-			<div class="entry" id="q">High Resid. q</div>
-			<div class="entry" id="Z">Low Comm. Z</div>
-			<div class="entry" id="A">Med. Comm. A</div>
-			<div class="entry" id="q">High Comm. Q</div>
-			<div class="entry" id="x">Low Office x</div>
-			<div class="entry" id="s">Med. Office s</div>
-			<div class="entry" id="w">High Offfice w</div>
-			<div class="entry" id="X">Low PDR X</div>
-			<div class="entry" id="S">Med. PDR S</div>
-			<div class="entry" id="W">Manufacturing W</div>
+		<div id="menu">
+			<div class="submenu" id="zone">
+				Zoning Tools
+				<div class="entry" id="122">Low Resid. z</div>
+				<div class="entry" id="97">Med. Resid. a</div>
+				<div class="entry" id="113">High Resid. q</div>
+				<div class="entry" id="90">Low Comm. Z</div>
+				<div class="entry" id="65">Med. Comm. A</div>
+				<div class="entry" id="81">High Comm. Q</div>
+				<div class="entry" id="120">Low Office x</div>
+				<div class="entry" id="115">Med. Office s</div>
+				<div class="entry" id="119">High Offfice w</div>
+				<div class="entry" id="88">Low PDR X</div>
+				<div class="entry" id="83">Med. PDR S</div>
+				<div class="entry" id="87">Manufacturing W</div>
+			</div>
+			<div class="submenu" id="util">
+				Utilities
+				
+			</div>
+			<div class="submenu" id="plop">
+				Civics	
+				<div class="entry" id="102">Fire Station f</div>
+				<div class="entry" id="103">Plaza g</div>
+				<div class="entry" id="104">Hospital h</div>
+				<div class="entry" id="106">High School j</div>
+				<div class="entry" id="107">Elementary School k</div>
+				<div class="entry" id="108">Libary l</div>
+				<div class="entry" id="109">Museum m</div>
+				<div class="entry" id="110">City College n</div>
+				<div class="entry" id="112">Police Staion p</div>
+			</div>
+			<div class="submenu" id="road">
+				Transportation
+				<div class="entry" id="114">Two-Lane Road r</div>
+				<div class="entry" id="82">Four-Lane Road R</div>
+			</div>
+			<div class="submenu" id="terraform">
+				Terraforming
+				<div class="entry" id="44">Raise Terrain ,</div>
+				<div class="entry" id="46">Lower Terrain .</div>
+			</div>
+			<div class="submenu" id="destroy">
+				Demolish/Dezone
+				<div class="entry" id="96">Demolish `</div>
+				<div class="entry" id="126">Dezone ~</div>
+			</div>
+			<div class="submenu" id="query">Query</div>
 		</div>
-		<div class="submenu" id="util">
-			Utilities
-			
-		</div>
-		<div class="submenu" id="plop">
-			Civics	
-			<div class="entry" id="f">Fire Station f</div>
-			<div class="entry" id="g">Plaza g</div>
-			<div class="entry" id="h">Hospital h</div>
-			<div class="entry" id="j">High School j</div>
-			<div class="entry" id="k">Elementary School k</div>
-			<div class="entry" id="l">Libary l</div>
-			<div class="entry" id="m">Museum m</div>
-			<div class="entry" id="n">City College n</div>
-			<div class="entry" id="p">Police Staion p</div>
-		</div>
-		<div class="submenu" id="road">
-			Transportation
-			<div class="entry" id="r">Two-Lane Road r</div>
-			<div class="entry" id="R">Four-Lane Road R</div>
-		</div>
-		<div class="submenu" id="terraform">
-			Terraforming
-			<div class="entry" id="comma">Raise Terrain ,</div>
-			<div class="entry" id="period">Lower Terrain .</div>
-		</div>
-		<div class="submenu" id="destroy">
-			Demolish/Dezone
-			<div class="entry" id="backt">Demolish `</div>
-			<div class="entry" id="tilde">Dezone ~</div>
-		</div>
-		<div class="submenu" id="query">Query</div>
 	</div>
 	</body>
 </html>

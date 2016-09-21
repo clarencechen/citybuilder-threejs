@@ -204,6 +204,156 @@ function setUpStatusDivs() {
 	$('#speed').text("Simulation Speed: 1x");
 }
 
+function triggerEvents(code) {
+	switch(code)
+	{
+	case 96: // accent (demolish)
+		mode = 64;
+		break;
+	case 126: // tilde (dezone)
+		mode = 24;
+		break;
+	case 65: // Shift + A key (medium density mixed-use)
+		mode = 16;
+		break;
+	case 70: // Shift + F key (large fire station)
+		mode = 41;
+		break;
+	case 71: // Shift + G key (large plaza area)
+		mode = 42;
+		break;
+	case 72: // Shift + H key (large hospital)
+		mode = 43;
+		break;
+	case 74: // Shift + J key (large high school)
+		mode = 44;
+		break;
+	case 75: // Shift + K key (large elementary)
+		mode = 45;
+		break;
+	case 76: // Shift + L key (large library)
+		mode = 46;
+		break;
+	case 77: // Shift + M Key ()
+		mode = 47;
+		break;
+	case 78: // Shift + N key ()
+		mode = 48;
+		break;
+	case 80: // Shift + P key (large police station)
+		mode = 49;
+		break;
+	case 81: // Shift + Q key (high density mixed-use)
+		mode = 17;
+		break;
+	case 82: // Shift + R key (large road)
+		mode = 6;
+		break;
+	case 83: // Shift + S key (medium density PDR)
+		mode = 22;
+		break;
+	case 87: // Shift + W key (heavy manufacturing)
+		mode = 23;
+		break;
+	case 88: // Shift + X key (low density PDR)
+		mode = 21;
+		break;
+	case 90: // Shift + Z key (low density commercial)
+		mode = 15;
+		break;
+	case 97: // A key (medium density residential)
+		mode = 13;
+		break;
+	case 102: // F key (fire station)
+		mode = 25;
+		break;
+	case 103: // G key (plaza area)
+		mode = 26;
+		break;
+	case 104: // H key (hospital)
+		mode = 27;
+		break;
+	case 106: // J key (high school)
+		mode = 28;
+		break;
+	case 107: // K key (elementary)
+		mode = 29;
+		break;
+	case 108: // L key (library)
+		mode = 30;
+		break;
+	case 109: // M Key (museum)
+		mode = 31;
+		break;
+	case 110: // N key (city college)
+		mode = 32;
+		break;
+	case 112: // P key (police station)
+		mode = 33;
+		break;
+	case 113: // Q key (high density residential)
+		mode = 14;
+		break;
+	case 114: // R Key (road)
+		mode = 5;
+		break;
+	case 115: // S Key (medium density office/commercial)
+		mode = 19;
+		break;
+	case 119: // W Key (high density office/commercial)
+		mode = 20;
+		break;
+	case 120: // X key (low density office)
+		mode = 18;
+		break;
+	case 122: // Z key (low density residential)
+		mode = 12;
+		break;
+	case 44: // , (raise terrain)
+		mode = 1;
+		break;
+	case 46: // . (lower terrain)
+		mode = 2;
+		break;
+	case 47: // / (View tunnels)
+		tunnelmode = !tunnelmode;
+		toggleTerrain(tunnelmode);
+		break;
+	case 91: // [ (raise bridge height)
+		if(buildBridge)
+			bridgeHeight += 0.25;
+			$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
+		break;
+	case 93: // ] (lower bridge height)
+		if(buildBridge)
+			bridgeHeight -= 0.25;
+			$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
+		break;
+	case 92: // \ (toggle bridge construction)
+		buildBridge = !buildBridge;
+		if(!buildBridge)
+			$('#bridge').text("Roads flush with terrain");
+		else
+			$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
+		break;
+	case 45: // - (decrease simulation speed)
+		if(simSpeed > 0 && simSpeed <=4)
+		{
+			simSpeed--;
+			$('#speed').text("Simulation Speed: " + simSpeed + "x");
+		}
+		break;
+	case 61: // + (increase simulation speed)
+		if(simSpeed >= 0 && simSpeed < 4)
+		{
+			simSpeed++;
+			$('#speed').text("Simulation Speed: " + simSpeed + "x");
+		}
+	default:
+		break;
+	}
+}
+
 function setUpControlListeners() {
 	$('canvas').mousemove(function(e) {
 		mousePositionX = e.pageX;
@@ -233,7 +383,7 @@ function setUpControlListeners() {
 			break;
 		}
 	});
-	$(document).mouseup(function(e) {
+	$('canvas').mouseup(function(e) {
 		switch(e.which){
 		case 1:
 			leftButton = false;
@@ -260,159 +410,25 @@ function setUpControlListeners() {
 		{
 			keyPressed = true;
 			cleanUp();
-			switch(e.keyCode)
-			{
-			case 96: // accent (demolish)
-				mode = 64;
-				break;
-			case 126: // tilde (dezone)
-				mode = 24;
-				break;
-			case 65: // Shift + A key (medium density mixed-use)
-				mode = 16;
-				break;
-			case 70: // Shift + F key (large fire station)
-				mode = 41;
-				break;
-			case 71: // Shift + G key (large plaza area)
-				mode = 42;
-				break;
-			case 72: // Shift + H key (large hospital)
-				mode = 43;
-				break;
-			case 74: // Shift + J key (large high school)
-				mode = 44;
-				break;
-			case 75: // Shift + K key (large elementary)
-				mode = 45;
-				break;
-			case 76: // Shift + L key (large library)
-				mode = 46;
-				break;
-			case 77: // Shift + M Key ()
-				mode = 47;
-				break;
-			case 78: // Shift + N key ()
-				mode = 48;
-				break;
-			case 80: // Shift + P key (large police station)
-				mode = 49;
-				break;
-			case 81: // Shift + Q key (high density mixed-use)
-				mode = 17;
-				break;
-			case 82: // Shift + R key (large road)
-				mode = 6;
-				break;
-			case 83: // Shift + S key (medium density PDR)
-				mode = 22;
-				break;
-			case 87: // Shift + W key (heavy manufacturing)
-				mode = 23;
-				break;
-			case 88: // Shift + X key (low density PDR)
-				mode = 21;
-				break;
-			case 90: // Shift + Z key (low density commercial)
-				mode = 15;
-				break;
-			case 97: // A key (medium density residential)
-				mode = 13;
-				break;
-			case 102: // F key (fire station)
-				mode = 25;
-				break;
-			case 103: // G key (plaza area)
-				mode = 26;
-				break;
-			case 104: // H key (hospital)
-				mode = 27;
-				break;
-			case 106: // J key (high school)
-				mode = 28;
-				break;
-			case 107: // K key (elementary)
-				mode = 29;
-				break;
-			case 108: // L key (library)
-				mode = 30;
-				break;
-			case 109: // M Key (museum)
-				mode = 31;
-				break;
-			case 110: // N key (city college)
-				mode = 32;
-				break;
-			case 112: // P key (police station)
-				mode = 33;
-				break;
-			case 113: // Q key (high density residential)
-				mode = 14;
-				break;
-			case 114: // R Key (road)
-				mode = 5;
-				break;
-			case 115: // S Key (medium density office/commercial)
-				mode = 19;
-				break;
-			case 119: // W Key (high density office/commercial)
-				mode = 20;
-				break;
-			case 120: // X key (low density office)
-				mode = 18;
-				break;
-			case 122: // Z key (low density residential)
-				mode = 12;
-				break;
-			case 44: // , (raise terrain)
-				mode = 1;
-				break;
-			case 46: // . (lower terrain)
-				mode = 2;
-				break;
-			case 47: // / (View tunnels)
-				tunnelmode = !tunnelmode;
-				toggleTerrain(tunnelmode);
-				break;
-			case 91: // [ (raise bridge height)
-				if(buildBridge)
-					bridgeHeight += 0.25;
-					$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
-				break;
-			case 93: // ] (lower bridge height)
-				if(buildBridge)
-					bridgeHeight -= 0.25;
-					$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
-				break;
-			case 92: // \ (toggle bridge construction)
-				buildBridge = !buildBridge;
-				if(!buildBridge)
-					$('#bridge').text("Roads flush with terrain");
-				else
-					$('#bridge').text("Road Elevation: " + bridgeHeight*16 + " m");
-				break;
-			case 45: // - (decrease simulation speed)
-				if(simSpeed > 0 && simSpeed <=4)
-				{
-					simSpeed--;
-					$('#speed').text("Simulation Speed: " + simSpeed + "x");
-				}
-				break;
-			case 61: // + (increase simulation speed)
-				if(simSpeed >= 0 && simSpeed < 4)
-				{
-					simSpeed++;
-					$('#speed').text("Simulation Speed: " + simSpeed + "x");
-				}
-			default:
-				break;
-//				addObjectToScene();
-			}
+			triggerEvents(e.keyCode);
 		}
 	});
-	$('canvas').keyup(function (e) {
+	$(document).keyup(function (e) {
 		keyPressed = false;
 	});
+	$('canvas').mouseleave(function (e) {
+		leftButton = false;
+		middleButton = false;
+		rightButton = false;
+		mouseBufferX = center[0];
+		mouseBufferY = center[1];
+		cleanUp();
+	})
+	$('div.entry').click(function (e) {
+		cleanUp();
+		triggerEvents(parseInt(e.currentTarget.id), 10);
+		event.stopPropagation();
+	})
 }
 
 $(document).ready(function() {

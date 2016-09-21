@@ -141,7 +141,6 @@ function getHeightForBuilding(x, z, sizeX, sizeZ) {
 			height += terrain.geometry.vertices[(z +b)*(TERRAIN_SIZE +1) +x +a].y;
 	height /= (sizeX +1)*(sizeZ +1);
 	height = height > 0 ? ((height*4 +.5)|0)/4 : ((height*4 -.5)|0)/4;
-
 	return height;
 }
 
