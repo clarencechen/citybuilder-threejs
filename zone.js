@@ -106,6 +106,12 @@ Zone.makeZoneModel = function(x, z, mode, preview, demolish) {
 	zoneMesh.name = "zone@" + x + " " + z;
 	return zoneMesh;
 }
+
+Zone.prototype.adjustLandValue = function() {
+//	plopsInReach = 
+	return 0;
+}
+
 Zone.prototype.develop = function() {
 	// Construct new zones if there is enough demand
 	if(Math.random()*(1 << 24) > (1 << 18))
@@ -116,19 +122,20 @@ Zone.prototype.develop = function() {
 	{
 		for(var j = 0; j < 3; j++)
 		{
-			
-			if(frontage[i] && frontage[i].buffer && Zone.enoughSpace(this.x, this.z, i, d[j]))
+			//enough space for zone
+			if(frontage[i] && frontage[i].buffer && Zone.enoughSpace(this.x, this.z, i, d[j], true))
 			{
-				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode);
+				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode, this.adjustLandValue());
 				city.immigrationRate += 1e-6;
 			}
 		}
 	}
 }
 
-Zone.enoughSpace = function(a, b, o, d) {
+Zone.enoughSpace = function(a, b, o, d, newZone) {
 	var mode = Zone.zones[b][a].mode;
-	for(var c = 0; c < d; c++)
+	for(var c = d -1; c >= 0; c--)
+	{	
 		switch (o) {
 			case 0:
 				if(!(Zone.zones[b][a -c] && Zone.zones[b][a -c].buffer && Zone.zones[b][a -c].mode === mode && !Grow.growers[b][a -c]))
@@ -147,6 +154,9 @@ Zone.enoughSpace = function(a, b, o, d) {
 					return false;
 				break;
 		}
+		if(!newZone)
+			break;
+	}
 	return true;
 }
 

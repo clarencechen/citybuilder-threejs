@@ -38,7 +38,7 @@ function findFaces(nearest) {
 			];
 }
 
-function colorFaces(current, anchor, revert) {
+function revertFaces(current, anchor) {
 	var terrain = scene.getObjectByName("terrain").children[0];
 	//vertexIndices = [2,2,1,0,0,1];
 	vertexIndices = [2,0,0,2,1,1];
@@ -55,40 +55,20 @@ function colorFaces(current, anchor, revert) {
 	for(b < d ? z = b : z = d; b < d ? z <= d : z <= b; z++)
 		for(a < c ? x = a : x = c; a < c ? x <= c : x <= a; x++)
 			faceIndices.push(findFaces(z*(TERRAIN_SIZE +1) +x));
-	if(revert)
+	for (var i = 0; i < faceIndices.length; i++)
 	{
-		for (var i = 0; i < faceIndices.length; i++)
+		for (var j = 0; j < 6; j++)
 		{
-			for (var j = 0; j < 6; j++)
+			if(faceIndices[i][j] >= 0 && faceIndices[i][j] < 2*TERRAIN_SIZE*TERRAIN_SIZE)
 			{
-				if(faceIndices[i][j] >= 0 && faceIndices[i][j] < 2*TERRAIN_SIZE*TERRAIN_SIZE)
-				{
-					var vertexLog = vertexIndices[j] === 0 ? terrain.geometry.faces[faceIndices[i][j]].a : (vertexIndices[j] == 1 ? terrain.geometry.faces[faceIndices[i][j]].b : terrain.geometry.faces[faceIndices[i][j]].c);
-					formercolors[j] = calcGroundColor(terrain.geometry.vertices[z*(TERRAIN_SIZE +1) +x].y);
-					console.log("Vertex " + vertexLog + " in Face # " + faceIndices[i][j] + " is about to be uncolored. Originally " + terrain.geometry.faces[faceIndices[i][j]].vertexColors[vertexIndices[j]].r);
-					terrain.geometry.faces[faceIndices[i][j]].vertexColors[vertexIndices[j]].copy(formercolors[j]);
-				}
+				var vertexLog = vertexIndices[j] === 0 ? terrain.geometry.faces[faceIndices[i][j]].a : (vertexIndices[j] == 1 ? terrain.geometry.faces[faceIndices[i][j]].b : terrain.geometry.faces[faceIndices[i][j]].c);
+				formercolors[j] = calcGroundColor(terrain.geometry.vertices[z*(TERRAIN_SIZE +1) +x].y);
+				console.log("Vertex " + vertexLog + " in Face # " + faceIndices[i][j] + " is about to be uncolored. Originally " + terrain.geometry.faces[faceIndices[i][j]].vertexColors[vertexIndices[j]].r);
+				terrain.geometry.faces[faceIndices[i][j]].vertexColors[vertexIndices[j]].copy(formercolors[j]);
 			}
 		}
-		console.log("End loop");
 	}
-	else if(lastAnchor === null)
-	{
-		for (var i = 0; i < faceIndices.length; i++)
-		{
-			for (var j = 0; j < 6; j++)
-			{
-				if(faceIndices[i][j] >= 0 && faceIndices[i][j] < 2*TERRAIN_SIZE*TERRAIN_SIZE)
-				{
-					var vertexLog = vertexIndices[j] === 0 ? terrain.geometry.faces[faceIndices[i][j]].a : (vertexIndices[j] == 1 ? terrain.geometry.faces[faceIndices[i][j]].b : terrain.geometry.faces[faceIndices[i][j]].c);
-					console.log("Vertex " + vertexLog + " in Face # " + faceIndices[i][j] + " is about to be colored. Originally " + terrain.geometry.faces[faceIndices[i][j]].vertexColors[vertexIndices[j]].r);
-					terrain.geometry.faces[faceIndices[i][j]].vertexColors[vertexIndices[j]].setHex(0xff0000);
-					
-				}
-			}
-		}
-		console.log("End loop");
-	}
+	console.log("End loop");
 	terrain.geometry.colorsNeedUpdate = true;
 }
 
@@ -145,7 +125,7 @@ function getHeightForBuilding(x, z, sizeX, sizeZ) {
 }
 
 function clearColors() {
-	colorFaces(0, (TERRAIN_SIZE)*(TERRAIN_SIZE) -1, true);
+	revertFaces(0, (TERRAIN_SIZE)*(TERRAIN_SIZE) -1);
 }
 
 function editTerrain(raise) {
@@ -186,7 +166,7 @@ function raisePoint(index, raise) {
 	if(!blocked)
 	{
 		raise ? point.y += 0.25 : point.y -= 0.25;
-		colorFaces(index, index, true);
+		revertFaces(index, index);
 		var nh =   [index -TERRAIN_SIZE -1,
 					index +TERRAIN_SIZE +1, 
 					index -1,

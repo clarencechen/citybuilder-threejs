@@ -1,13 +1,16 @@
-function Grow(x, z, f, d, o, mode) {
+function Grow(x, z, f, d, o, mode, lv) {
 
 	this.x = x;
 	this.z = z;
-	this.f = f;
-	this.d = d;
-	this.o = o;
+	this.f = f;//width of frontage
+	this.d = d;//depth of lot
+	this.o = o;//orientation of lot
+	this.mode = mode;
+	this.llv = lv;//log base 2 of land value of growable (ranges from 6 (64) to -6 (1/64))
 	for(var a = 0; a < d; a++)
 		for(var b = 0; b < f; b++)
-			switch (o) {
+			switch (o)
+			{
 				case 0:
 					Grow.growers[z +b][x -a] = this;
 					break;
@@ -21,7 +24,6 @@ function Grow(x, z, f, d, o, mode) {
 					Grow.growers[z -a][x +b] = this;
 					break;
 			}
-	this.mode = mode;
 	this.variant = 1;
 	this.residents = 0;
 	this.unemployed = 0;
@@ -81,31 +83,49 @@ function Grow(x, z, f, d, o, mode) {
 		this.model = Grow.makeModel(this.x, this.z, this.f, this.d, this.o, this.mode, this.variant, demolish);
 		scene.add(this.model);
 	}
-	this.grow = function(grow, expand, demolish) {
-		
-			if(grow)
-				this.variant += grow;
-			if(expand)
-				;
-			this.updateModel(demolish);
+	this.grow = function() {
+		this.variant++;
+		this.updateModel(false);
+	}
+	this.expand = function() {
+		if(!Zone.enoughSpace(this.x, this.z, this.o, this.d +1, false))
+			return false;
+		for (var b = 0; b < this.f; b++)			
+			switch(this.o) {
+				case 0:
+					Grow.growers[this.z +b][this.x -this.d] = this;
+					break;
+				case 1:
+					Grow.growers[this.z +this.d][this.x +b] = this;
+					break;
+				case 2:
+					Grow.growers[this.z +b][this.x +this.d] = this;
+					break;
+				case 3:
+					Grow.growers[this.z -this.d][this.x +b] = this;
+					break;
+			}
+		this.d++;
+		this.updateModel(false);
+		return true;
 	}
 	this.del = function() {
 		scene.remove(this.model);
-		Grow.list.splice(Grow.list.indexOf(z*TERRAIN_SIZE +x), 1);
-		for(var a = 0; a < d; a++)
-			for(var b = 0; b < f; b++)
-				switch (o) {
+		Grow.list.splice(Grow.list.indexOf(this.z*TERRAIN_SIZE +this.x), 1);
+		for(var a = 0; a < this.d; a++)
+			for(var b = 0; b < this.f; b++)
+				switch (this.o) {
 					case 0:
-						Grow.growers[z +b][x -a] = null;
+						Grow.growers[this.z +b][this.x -a] = null;
 						break;
 					case 1:
-						Grow.growers[z +a][x +b] = null;
+						Grow.growers[this.z +a][this.x +b] = null;
 						break;
 					case 2:
-						Grow.growers[z +b][x +a] = null;
+						Grow.growers[this.z +b][this.x +a] = null;
 						break;
 					case 3:
-						Grow.growers[z -a][x +b] = null;
+						Grow.growers[this.z -a][this.x +b] = null;
 						break;
 				}
 	}
@@ -196,7 +216,7 @@ Grow.makeModel = function(x, z, f, d, o, mode, variant, demolish) {
 }
 Grow.prototype.employ = function(cityPool, pool) {
 	const moveRate = 8;
-	const maxPop = this.variant !== 0 ? city.maxPopPerVariant << this.variant : 0;
+	const maxPop = this.variant !== 0 ? city.maxPopPerVariant*this.d*this.f << this.variant : 0;
 	var moving = 0;
 	/* If there is room, employ up to 8 people*/
 	if(pool >= 1)
@@ -219,11 +239,13 @@ Grow.prototype.employ = function(cityPool, pool) {
 	}
 	// Construct new zones if there is enough demand
 	if(cityPool > maxPop && this.variant < this.maxVariants)
-		if(Math.random()*(1 << 24) < 1 << (18 -this.variant))
+		if(Math.random()*(1 << 24) < 1 << (18 -this.variant +this.llv))
 		{
-			this.grow(1);
-			this.variant++;
-			this.updateModel(false, false, false);
+			expanded = false;
+			if(Math.random() < 1/3)
+				expanded = this.expand();
+			if(!expanded)
+				this.grow();
 			city.immigrationRate += this.variant*1e-6;
 		}
 	return moving;
@@ -232,7 +254,7 @@ Grow.prototype.employ = function(cityPool, pool) {
 Grow.prototype.house = function(rate) {
 	var pool = city.populationPool;
 	var moveRate = 64;
-	const maxPop = this.variant !== 0 ? city.maxPopPerVariant << this.variant : 0;
+	const maxPop = this.variant !== 0 ? city.maxPopPerVariant*this.d*this.f << this.variant : 0;
 	/* If there is room, move up to 64 people*/
 	if(pool >= 1)
 	{
@@ -259,11 +281,13 @@ Grow.prototype.house = function(rate) {
 	}
 	// Construct new zones if there is enough demand
 	if(pool > maxPop && this.variant < this.maxVariants)
-		if(Math.random()*(1 << 24) < 1 << (18 -this.variant))
+		if(Math.random()*(1 << 24) < 1 << (18 -this.variant +this.llv))
 		{
-			this.grow(1);
-			this.variant++;
-			this.updateModel(false, false, false);
+			expanded = false;
+			if(Math.random() < 1/3)
+				expanded = this.expand();
+			if(!expanded)
+				this.grow();
 			city.immigrationRate += this.variant*1e-6;
 		}
 }

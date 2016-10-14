@@ -1,5 +1,5 @@
 function City () {
-	this.immigrationRate = 1e-6;
+	this.immigrationRate = 0;
 	
 	this.birthRate = 5.078125e-5;
 	this.deathRate = 3.183594e-5;
@@ -67,6 +67,7 @@ City.prototype.simulate = function() {
 	for(var i = 0; i < order0.length; i++)
 	{
 		var z0 = Zone.zones[(order0[i]/TERRAIN_SIZE)|0][order0[i]%TERRAIN_SIZE];
+//		z0.adjustLandValue();
 		z0.develop();
 	}
 	for(var i = 0; i < order1.length; i++)

@@ -2,15 +2,6 @@ function Plop(x, z, preview, mode)
 {
 	for(var a = 0; a < Plop.sizes[mode].x; a++)
 		for(var b = 0; b < Plop.sizes[mode].z; b++)
-		{
-			for(var c = this.y; c < Plop.sizes[mode].y; c += 0.25)
-				if(Road.bridges[z +b][x +a][this.y +c])
-						return;
-			if((Plop.plops[z +b][x +a] && !Plop.plops[z +b][x +a].preview) || Road.roads[z +b][x +a])
-				return;
-		}
-	for(var a = 0; a < Plop.sizes[mode].x; a++)
-		for(var b = 0; b < Plop.sizes[mode].z; b++)
 			Plop.plops[z +b][x +a] = this;
 	this.x = x;
 	this.z = z;

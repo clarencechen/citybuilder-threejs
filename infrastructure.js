@@ -233,8 +233,8 @@ function placePloppable(x, z, preview, demolish, mode) {
 	if(plop)
 	{
 		//make sure that destruction/modification loop starts where it should
-		var x1 = Plop.plops[z][x].x;
-		var z1 = Plop.plops[z][x].z;
+		var x1 = plop.x;
+		var z1 = plop.z;
 		if(!preview && demolish)
 		{
 			scene.remove(plop.model);
@@ -253,12 +253,29 @@ function placePloppable(x, z, preview, demolish, mode) {
 	}
 	else if(!demolish)
 	{
+		
+		if(!checkForPlopSpace(x, z))
+			return;
 		plop = new Plop(x, z, preview, mode);
 		for(var a = 0; a < Plop.sizes[mode].x; a++)
 			for(var b = 0; b < Plop.sizes[mode].z; b++)
 				if(Zone.zones[z +b][x +a])
 					zoneTile(x +a, z +b, 0, preview, true, true);//overwriting zones
 	}
+}
+
+function checkForPlopSpace(x, z) {
+	for(var a = 0; a < Plop.sizes[mode].x; a++)
+		for(var b = 0; b < Plop.sizes[mode].z; b++)
+		{
+			y = getHeightForBuilding(x, z, Plop.sizes[mode].x, Plop.sizes[mode].z);
+			for(var c = 0; c < Plop.sizes[mode].y; c += 0.25)
+				if(Road.bridges[z +b][x +a][y +c])
+					return false;
+			if((Plop.plops[z +b][x +a] && !Plop.plops[z +b][x +a].preview) || Road.roads[z +b][x +a])
+				return false;
+		}
+	return true;
 }
 
 function placeRoadSegment(x, z, capacity, preview, demolish, y) {
