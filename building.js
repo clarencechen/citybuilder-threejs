@@ -13,6 +13,8 @@ function Plop(x, z, preview, mode)
 	scene.add(this.model);
 	this.updateModel = function(preview, demolish) {
 		scene.remove(this.model);
+		this.model.geometry.dispose();
+		this.model.material.dispose();
 		this.model = 0;
 		this.model = Plop.makePlopModel(this.x, this.z, this.mode, preview, demolish);
 		scene.add(this.model);

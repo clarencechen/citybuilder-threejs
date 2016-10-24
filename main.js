@@ -98,7 +98,7 @@ function generateTerrain(size) {
 
 function toggleTerrain(transparent) {
 	var terrain = scene.getObjectByName('terrain').children;
-	terrain[0].material.visible = transparent
+	terrain[0].material.visible = transparent;
 }
 
 function render() {

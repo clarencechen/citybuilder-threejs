@@ -201,7 +201,11 @@ function zoneTile(x, z, mode, preview, demolish, hide) {
 				grow = null;
 			}
 			if(zone.model)
+			{
 				scene.remove(zone.model);
+				zone.model.geometry.dispose();
+				zone.model.material.dispose();
+			}
 			Zone.zones[z][x] = null;
 		}
 		else
@@ -238,6 +242,9 @@ function placePloppable(x, z, preview, demolish, mode) {
 		if(!preview && demolish)
 		{
 			scene.remove(plop.model);
+			plop.model.geometry.dispose();
+			plop.model.material.dispose();
+
 			for(var a = 0; a < Plop.sizes[plop.mode].x; a++)
 				for(var b = 0; b < Plop.sizes[plop.mode].z; b++)	
 					Plop.plops[z1 +b][x1 +a] = null;
@@ -245,6 +252,9 @@ function placePloppable(x, z, preview, demolish, mode) {
 		else
 		{
 			plop.modify(preview, demolish);
+			plop.model.geometry.dispose();
+			plop.model.material.dispose();
+
 			for(var a = 0; a < Plop.sizes[plop.mode].x; a++)
 				for(var b = 0; b < Plop.sizes[plop.mode].z; b++)
 					if(Zone.zones[z1 +b][x1 +a])
@@ -292,6 +302,8 @@ function placeRoadSegment(x, z, capacity, preview, demolish, y) {
 		if(!preview && demolish)
 		{
 			scene.remove(road.model);
+			road.model.geometry.dispose();
+			road.model.material.dispose();
 			y === null || y === undefined ? Road.roads[z][x] = null : Road.bridges[z][x][y] = null;
 			road.matchNeighbors(preview, demolish);
 		}
@@ -327,7 +339,11 @@ function revertZoneTile(x, z) {
 	else if(zone)
 	{
 		if(zone.model)
+		{
 			scene.remove(zone.model);
+			zone.model.geometry.dispose();
+			zone.model.material.dispose();
+		}
 		Zone.zones[z][x] = null;
 	}
 }
@@ -349,6 +365,8 @@ function revertPloppable(x, z) {
 		else
 		{
 			scene.remove(plop.model);
+			plop.model.geometry.dispose();
+			plop.model.material.dispose();
 			for(var a = 0; a < Plop.sizes[plop.mode].x; a++)
 				for(var b = 0; b < Plop.sizes[plop.mode].z; b++)	
 				{
@@ -375,6 +393,8 @@ function revertRoadSegment(x, z, y) {
 	else if(road)//preview road segment at specified x and z
 	{
 		scene.remove(road.model);
+		road.model.geometry.dispose();
+		road.model.material.dispose();
 		y === null || y === undefined ? Road.roads[z][x] = null : Road.bridges[z][x][y] = null;
 		road.matchNeighbors(true, false);
 	}

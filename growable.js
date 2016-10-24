@@ -80,6 +80,8 @@ function Grow(x, z, f, d, o, mode, lv) {
 	scene.add(this.model);
 	this.updateModel = function(demolish) {
 		scene.remove(this.model);
+		this.model.geometry.dispose();
+		this.model.material.dispose();
 		this.model = Grow.makeModel(this.x, this.z, this.f, this.d, this.o, this.mode, this.variant, demolish);
 		scene.add(this.model);
 	}
@@ -111,6 +113,8 @@ function Grow(x, z, f, d, o, mode, lv) {
 	}
 	this.del = function() {
 		scene.remove(this.model);
+		this.model.geometry.dispose();
+		this.model.material.dispose();
 		Grow.list.splice(Grow.list.indexOf(this.z*TERRAIN_SIZE +this.x), 1);
 		for(var a = 0; a < this.d; a++)
 			for(var b = 0; b < this.f; b++)
@@ -232,10 +236,11 @@ Grow.prototype.employ = function(cityPool, pool) {
 	/* Move population that cannot be sustained into the pool */
 	if(this.employees > maxPop)
 	{
-		pool += this.employees -maxPop;
-		moving -= this.employees -maxPop;
+		extra = this.employees -maxPop;
+		pool += extra;
+		moving -= extra;
 		this.employees = maxPop;
-		city.immigrationRate -= this.variant*1e-7;
+		city.immigrationRate -= (extra/maxPop)*this.variant*1e-8;
 	}
 	// Construct new zones if there is enough demand
 	if(cityPool > maxPop && this.variant < this.maxVariants)
@@ -246,7 +251,8 @@ Grow.prototype.employ = function(cityPool, pool) {
 				expanded = this.expand();
 			if(!expanded)
 				this.grow();
-			city.immigrationRate += this.variant*1e-6;
+			city.immigrationRate += this.variant*1e-8;
+			this.llv = Zone.adjustLandValue();
 		}
 	return moving;
 }
@@ -273,11 +279,12 @@ Grow.prototype.house = function(rate) {
 	/* Move population that cannot be sustained into the pool */
 	if(this.residents >= maxPop +1)
 	{
-		pool += this.residents -maxPop;
-		moving -= this.residents -maxPop;
+		extra = this.residents -maxPop;
+		pool += extra;
+		moving -= extra;
 		this.residents = maxPop;
-		this.unemployed = maxPop*this.propCanWork;
-		city.immigrationRate -= this.variant*1e-7;
+		this.unemployed -= extra*this.propCanWork;
+		city.immigrationRate -= (extra/maxPop)*this.variant*1e-8;
 	}
 	// Construct new zones if there is enough demand
 	if(pool > maxPop && this.variant < this.maxVariants)
@@ -288,7 +295,8 @@ Grow.prototype.house = function(rate) {
 				expanded = this.expand();
 			if(!expanded)
 				this.grow();
-			city.immigrationRate += this.variant*1e-6;
+			city.immigrationRate += this.variant*1e-8;
+			this.llv = Zone.adjustLandValue();
 		}
 }
 

@@ -10,8 +10,13 @@ function Zone(x, z, preview, mode)
 	scene.add(this.model);
 
 	this.updateModel = function(preview, demolish, hide) {
-		scene.remove(this.model);
-		this.model = 0;
+		if(this.model)
+		{
+			scene.remove(this.model);
+			this.model.geometry.dispose();
+			this.model.material.dispose();
+			this.model = 0;
+		}
 		if(!hide)
 		{
 			this.model = Zone.makeZoneModel(this.x, this.z, this.mode, preview, demolish);
@@ -107,14 +112,10 @@ Zone.makeZoneModel = function(x, z, mode, preview, demolish) {
 	return zoneMesh;
 }
 
-Zone.prototype.adjustLandValue = function() {
-//	plopsInReach = 
-	return 0;
-}
-
 Zone.prototype.develop = function() {
 	// Construct new zones if there is enough demand
-	if(Math.random()*(1 << 24) > (1 << 18))
+	var lv = Zone.adjustLandValue();
+	if(Math.random()*(1 << 24) > 1 << (18 + lv))
 		return;
 	var frontage = [Road.roads[this.z][this.x +1], Road.roads[this.z -1][this.x], Road.roads[this.z][this.x -1], Road.roads[this.z +1][this.x]];
 	var d = [2,3,1];
@@ -125,11 +126,16 @@ Zone.prototype.develop = function() {
 			//enough space for zone
 			if(frontage[i] && frontage[i].buffer && Zone.enoughSpace(this.x, this.z, i, d[j], true))
 			{
-				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode, this.adjustLandValue());
+				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode, lv);
 				city.immigrationRate += 1e-6;
 			}
 		}
 	}
+}
+
+Zone.adjustLandValue = function() {
+//	plopsInReach = 
+	return 0;
 }
 
 Zone.enoughSpace = function(a, b, o, d, newZone) {

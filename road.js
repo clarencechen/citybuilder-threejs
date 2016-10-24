@@ -26,6 +26,8 @@ function Road(x, z, capacity, preview, y)
 	scene.add(this.model);
 	this.updateModel = function(preview, demolish) {
 		scene.remove(this.model);
+		this.model.geometry.dispose();
+		this.model.material.dispose();
 		this.model = 0;
 		this.model = Road.makeRoadModel(this.x, this.y, this.z, this.capacity, this.exitDirs, preview, demolish);
 		scene.add(this.model);
