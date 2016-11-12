@@ -1,17 +1,17 @@
+//if(!!window.Worker)
+//	var dworker = new Worker('commute.js');
+//else
+//	console.log('workers not supported!');
+
 function City () {
-	this.immigrationRate = 0;
+	this.immigrationRate = 1e-7;
 	
 	this.birthRate = 5.078125e-5;
 	this.deathRate = 3.183594e-5;
 	this.propCanWork = 0.5;
-	this.populationPool = 10;
 	
-	this.residentialTax = 0.1;
-	this.commercialTax = 0.1;
-	this.officeTax = 0.1;
-	this.lightIndTax = 0.1;
-	this.heavyIndTax = 0.1;
-	
+	this.taxes = [0.1, 0.1, 0.1, 0.1, 0.1];
+
 	this.residentialEarn = 0;
 	this.commercialEarn = 0;
 	this.officeEarn = 0;
@@ -22,7 +22,7 @@ function City () {
 	this.maxPopPerVariant = 5;
 	this.zones = [];
 	this.residents = 0;
-	this.unemployed = [0,0,0,0];
+	this.demand = [10,0,0,0,0];
 
 	this.addPop = function(type) {
 		var pop = 0;
@@ -40,7 +40,7 @@ function City () {
 			var x = loc%TERRAIN_SIZE;
 			var z = (loc/TERRAIN_SIZE)|0;
 			if((Grow.growers[z][x].mode/3)|0 === 4)//residential
-				pop += Grow.growers[z][x].unemployed*Grow.growers[z][x].empSplit[type];
+				pop += Grow.growers[z][x].unemployed[type -1];
 		});
 		return pop;
 	}
@@ -66,9 +66,8 @@ City.prototype.simulate = function() {
 	var g = Grow.growers;
 	for(var i = 0; i < order0.length; i++)
 	{
-		var z0 = Zone.zones[(order0[i]/TERRAIN_SIZE)|0][order0[i]%TERRAIN_SIZE];
-//		z0.adjustLandValue();
-		z0.develop();
+		var zone = Zone.zones[(order0[i]/TERRAIN_SIZE)|0][order0[i]%TERRAIN_SIZE];
+		zone.develop();
 	}
 	for(var i = 0; i < order1.length; i++)
 	{
@@ -76,22 +75,15 @@ City.prototype.simulate = function() {
 		if(z1.mode >= 12 && z1.mode < 15)//residential
 		{
 			/* Redistribute the pool and increase the population total by the tile's population */
+			var hires = 0;
 			z1.house(z1.birthRate -z1.deathRate);
 			for(var j = 0; j < order2.length; j++)
 			{
 				var z2 = g[(order2[j]/TERRAIN_SIZE)|0][order2[j]%TERRAIN_SIZE];
-				if(/*commute(z1,z2) &&*/ z2.mode >= 15 && z2.mode < 18)
-					if(Math.random() < .75*(1 -this.commercialTax))
-						z1.unemployed -= z2.employ(this.unemployed[0], z1.unemployed*z1.empSplit[0]);
-				if(/*commute(z1,z2) &&*/ z2.mode >= 18 && z2.mode < 21)
-					if(Math.random() < .75*(1 -this.officeTax))
-						z1.unemployed -= z2.employ(this.unemployed[1], z1.unemployed*z1.empSplit[1]);
-				if(/*commute(z1,z2) &&*/ z2.mode >= 21 && z2.mode < 23)
-					if(Math.random() < .75*(1 -this.lightIndTax))
-						z1.unemployed -= z2.employ(this.unemployed[2], z1.unemployed*z1.empSplit[2]);
-				if(/*commute(z1,z2) &&*/ z2.mode === 23)
-					if(Math.random() < .75*(1 -this.heavyIndTax))
-						z1.unemployed -= z2.employ(this.unemployed[3], z1.unemployed*z1.empSplit[3]);
+				var type = mode < 23 ? ((mode/3)|0) -4 : 4;
+				if(/*commute(z1,z2) &&*/ type)
+					if(Math.random() < .95*(1 -this.taxes[type]))
+						z2.employ(z1);
 			}
 		}
 		/* Extract resources from the ground. */
@@ -117,8 +109,8 @@ City.prototype.simulate = function() {
 					{
 						++receivedResources;
 						--z2.production;
-						z2.revenue += 100*(1.0 -this.heavyIndTax);
-						this.heavyIndEarn += 100*this.heavyIndTax;
+						z2.revenue += 100*(1.0 -this.taxes[4]);
+						this.heavyIndEarn += 100*this.taxes[4];
 					}
 			}
 
@@ -143,8 +135,8 @@ City.prototype.simulate = function() {
 					{
 						--z2.storedGoods;
 						++receivedGoods;
-						z2.revenue += 100*(1.0 -this.lightIndTax);
-						this.lightIndEarn += 100*this.lightIndTax;
+						z2.revenue += 100*(1.0 -this.taxes[3]);
+						this.lightIndEarn += 100*this.taxes[3];
 					}
 				else if(/*commute(z2, z1) &&*/ z2.mode >= 12 && z2.mode < 15)
 					maxCustomers += z2.residents*1.5*z2.propCanWork*Math.random();
@@ -152,22 +144,22 @@ City.prototype.simulate = function() {
 					break;
 			}
 			/* Calculate the overall revenue for the tile. */
-			z1.production = (receivedGoods +Math.random()/10)*(1.0 -this.commercialTax);
+			z1.production = (receivedGoods +Math.random()/10)*(1.0 -this.taxes[1]);
 			z1.revenue = 100*z1.production*maxCustomers;
-			this.commercialEarn += 100*(receivedGoods +Math.random()/10)*this.commercialTax*maxCustomers;
+			this.commercialEarn += 100*(receivedGoods +Math.random()/10)*this.taxes[1]*maxCustomers;
 		}
 	}
-	this.residentialEarn += this.addPop(0)*this.residentialTax*15;
-	this.officeEarn += this.addPop(2)*this.officeTax*30;
+	this.residentialEarn += this.addPop(0)*this.taxes[0]*15;
+	this.officeEarn += this.addPop(2)*this.taxes[2]*30;
 
 	var poolGrowthRate = this.immigrationRate +this.birthRate -this.deathRate;
-	this.populationPool *= 1 +poolGrowthRate;
+	this.demand[0] *= 1 +poolGrowthRate;
 
-	this.residents = this.addPop(0) +this.populationPool;
+	this.residents = this.addPop(0) +this.demand[0];
 	$('#population').text('Population: ' + Math.floor(this.residents));
 
-	for(var i = 0; i < this.unemployed.length; i++)
-		this.unemployed[i] = this.addUnemployed(i);
+	for(var i = 1; i < this.demand.length; i++)
+		this.demand[i] = this.addUnemployed(i);
 }
 
 

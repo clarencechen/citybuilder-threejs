@@ -114,8 +114,7 @@ Zone.makeZoneModel = function(x, z, mode, preview, demolish) {
 
 Zone.prototype.develop = function() {
 	// Construct new zones if there is enough demand
-	var lv = Zone.adjustLandValue();
-	if(Math.random()*(1 << 24) > 1 << (18 + lv))
+	if(Math.random()*(1 << 24) > 1 << (18 +this.adjustLandValue()))
 		return;
 	var frontage = [Road.roads[this.z][this.x +1], Road.roads[this.z -1][this.x], Road.roads[this.z][this.x -1], Road.roads[this.z +1][this.x]];
 	var d = [2,3,1];
@@ -124,18 +123,23 @@ Zone.prototype.develop = function() {
 		for(var j = 0; j < 3; j++)
 		{
 			//enough space for zone
-			if(frontage[i] && frontage[i].buffer && Zone.enoughSpace(this.x, this.z, i, d[j], true))
+			if(frontage[i] && frontage[i].buffer && Zone.enoughSpace(this.x, this.z, i, d[j], true) && Zone.enoughDemand(this.mode, d[j]))
 			{
-				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode, lv);
-				city.immigrationRate += 1e-6;
+				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode, this.adjustLandValue());
+				city.immigrationRate += 1e-8;
 			}
 		}
 	}
 }
 
-Zone.adjustLandValue = function() {
-//	plopsInReach = 
+Zone.prototype.adjustLandValue = function() {
+//	var  
 	return 0;
+}
+
+Zone.enoughDemand = function(mode, d) {
+	var pool = mode < 23 ? city.demand[((mode/3)|0) -4] : city.demand[4];
+	return pool > city.maxPopPerVariant*d;
 }
 
 Zone.enoughSpace = function(a, b, o, d, newZone) {

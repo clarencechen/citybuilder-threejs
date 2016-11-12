@@ -26,14 +26,14 @@ function Grow(x, z, f, d, o, mode, lv) {
 			}
 	this.variant = 1;
 	this.residents = 0;
-	this.unemployed = 0;
+	this.unemployed = [0, 0, 0, 0];
 	this.employees = 0;
 	this.production = 0;
 	this.storedGoods = 0;
 	this.revenue = 0;
 	this.propCanWork = 0.5;
-	this.birthRate = 5.078125e-5;
-	this.deathRate = 3.183594e-5;
+	this.birthRate = city.birthRate;
+	this.deathRate = city.deathRate;
 	this.empSplit = [.3, .2, .3, .2];
 	switch(this.mode)
 	{
@@ -218,32 +218,37 @@ Grow.makeModel = function(x, z, f, d, o, mode, variant, demolish) {
 	grownMesh.name = "grown@" + x + " " + z;
 	return grownMesh;
 }
-Grow.prototype.employ = function(cityPool, pool) {
+Grow.prototype.employ = function(zone) {	
+	var cityPool = city.demand;
+	var pool = zone.unemployed;
+	var type = this.mode < 23 ? [((this.mode/3)|0) -4] : 4
 	const moveRate = 8;
 	const maxPop = this.variant !== 0 ? city.maxPopPerVariant*this.d*this.f << this.variant : 0;
 	var moving = 0;
 	/* If there is room, employ up to 8 people*/
-	if(pool >= 1)
+	if(pool[type] >= 1)
 	{
 		moving = maxPop -this.employees;
 		if(moving > moveRate)
 			moving = moveRate;
-		if(moving > pool)
-			moving = pool;
-		pool -= moving;
+		if(moving > pool[type])
+			moving = pool[type];
+		pool[type] -= moving;
+		cityPool[type] -= moving;
 		this.employees += moving;
 	}
 	/* Move population that cannot be sustained into the pool */
 	if(this.employees > maxPop)
 	{
 		extra = this.employees -maxPop;
-		pool += extra;
+		pool[type] += extra -moving;
+		cityPool[type] += extra -moving;
 		moving -= extra;
 		this.employees = maxPop;
 		city.immigrationRate -= (extra/maxPop)*this.variant*1e-8;
 	}
-	// Construct new zones if there is enough demand
-	if(cityPool > maxPop && this.variant < this.maxVariants)
+	// Grow existing zones if there is enough demand
+	if(cityPool[type] > maxPop && this.variant < this.maxVariants)
 		if(Math.random()*(1 << 24) < 1 << (18 -this.variant +this.llv))
 		{
 			expanded = false;
@@ -252,42 +257,44 @@ Grow.prototype.employ = function(cityPool, pool) {
 			if(!expanded)
 				this.grow();
 			city.immigrationRate += this.variant*1e-8;
-			this.llv = Zone.adjustLandValue();
+			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
 		}
-	return moving;
 }
 //slated for webworker prcoessing
 Grow.prototype.house = function(rate) {
-	var pool = city.populationPool;
+	var pool = city.demand;
 	var moveRate = 64;
 	const maxPop = this.variant !== 0 ? city.maxPopPerVariant*this.d*this.f << this.variant : 0;
 	/* If there is room, move up to 64 people*/
-	if(pool >= 1)
+	if(pool[0] >= 1)
 	{
 		var moving = maxPop - this.residents;
 		if(moving > moveRate)
 			moving = moveRate;
-		if(moving > pool)
-			moving = pool;
-		pool -= moving;
+		if(moving > pool[0])
+			moving = pool[0];
+		pool[0] -= moving;
 		this.residents += moving;
-		this.unemployed += moving*city.propCanWork;
+		for(var i = 0; i < this.unemployed.length; i++)
+			this.unemployed[i] += moving*city.propCanWork*this.empSplit[i];
 	}
 	/* Adjust the population for births and deaths */
 	this.residents *= 1 +rate;
-	this.unemployed *= 1 +rate;
+	for(var i = 0; i < this.unemployed.length; i++)
+		this.unemployed[i] *= 1 +rate
 	/* Move population that cannot be sustained into the pool */
 	if(this.residents >= maxPop +1)
 	{
 		extra = this.residents -maxPop;
-		pool += extra;
+		pool[0] += extra;
 		moving -= extra;
 		this.residents = maxPop;
-		this.unemployed -= extra*this.propCanWork;
+		for(var i = 0; i < this.unemployed.length; i++)
+			this.unemployed[i] -= extra*this.propCanWork*this.empSplit[i];
 		city.immigrationRate -= (extra/maxPop)*this.variant*1e-8;
 	}
-	// Construct new zones if there is enough demand
-	if(pool > maxPop && this.variant < this.maxVariants)
+	// Grow existing zones if there is enough demand
+	if(pool[0] > maxPop && this.variant < this.maxVariants)
 		if(Math.random()*(1 << 24) < 1 << (18 -this.variant +this.llv))
 		{
 			expanded = false;
@@ -296,7 +303,7 @@ Grow.prototype.house = function(rate) {
 			if(!expanded)
 				this.grow();
 			city.immigrationRate += this.variant*1e-8;
-			this.llv = Zone.adjustLandValue();
+			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
 		}
 }
 

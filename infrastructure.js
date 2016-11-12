@@ -1,8 +1,3 @@
-//if(!!window.Worker)
-//	var dworker = new Worker('develop.js');
-//else
-//	console.log('workers not supported!');
-
 function updatePlacementPosition(mouse) {
 	keyPressed = false;
 	raycaster.setFromCamera(mouse, camera);
