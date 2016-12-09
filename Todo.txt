@@ -1,14 +1,20 @@
 Utilities:
 	Needed or else growables will abandon
 	Power and Water:
-		Pipes and Lines deliver to growables, per-capita consumption decreases as variant and education increase
+		Pipes and Lines deliver to growables, per-capita consumption decreases as variant and wealth increase
 	Garbage:
 		Effectiveness based on road congestion, per-capita production decreases with power and water consumption
 Outside Connections:
 	Used to import raw materials and goods when not locally produced
-Commutes, Shopping Trips, and Freight:
+Traveling:
+	Includes Commute, Shopping, Leisure, Freight, and School trips
 	A* algorithm, initially supporting car and pedestrian, adding public transport later
 	Pedestrian commutes are slow but do not contribute to congestion
+Wealth and Housing:
+	Citizens are categorized into one of four education ranges, this determines what housing gets built and inhabited and what jobs are demanded.
+	Housing has three wealth levels and a number of density variants.
+	Commercial buildings also have three wealth levels, determing who shops at said building. 
+	Jobs depend on education, and different commercial/office/PDR/manufacturing buildings have different numbers of jobs at each education level.
 Land Value:
 	Based on services, pollution, terrain slope, and Land Value and commute time of nearby lots
 Public Transport:
@@ -18,18 +24,19 @@ Services:
 	Police and Fire:
 		
 	Education:
-		Shifts employment and wealth ratios, affects birth rates significantly
+		Shifts employment and wealth ratios, decreases birth rates significantly
 	Health:
-		Affects birth rates somewhat and death rates greatly
-	Parks:
-		Affects death rates slightly directly, decreases Air and Noise Pollution
+		Decreases birth rates somewhat and death rates greatly
+	Leisure:
+		Decreases death rates slightly directly, decreases Air and Noise Pollution with Parks, slightly increased Education with Museums
+		Private commercial buildings also create leisure
 Pollution:
 	Comes in three forms: Air, Ground/Water, and Noise
 	Production decreases as Land Value increases
 	Increases Death Rates and Decreases Land Value of nearby lots
 	Trees/Parks help with Air and Noise Pollution
 	Air:
-		Mainly comes from private autos, heavy manufaturing, and dirty power plants
+		Mainly comes from private autos, heavy manufacturing, and dirty power plants
 	Ground/Water:
 		Mainly comes from heavy maufacturing and dirty power plants
 	Noise:
