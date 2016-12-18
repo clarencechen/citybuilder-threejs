@@ -119,17 +119,10 @@ Zone.prototype.develop = function() {
 	var frontage = [Road.roads[this.z][this.x +1], Road.roads[this.z -1][this.x], Road.roads[this.z][this.x -1], Road.roads[this.z +1][this.x]];
 	var d = [2,3,1];
 	for(var i = 0; i < 4; i++)
-	{
 		for(var j = 0; j < 3; j++)
-		{
 			//enough space for zone
 			if(frontage[i] && frontage[i].buffer && Zone.enoughSpace(this.x, this.z, i, d[j], true) && Zone.enoughDemand(this.mode, d[j]))
-			{
-				var grower = new Grow(this.x, this.z, 1, d[j], i, this.mode, this.adjustLandValue());
-				city.immigrationRate += 1e-8;
-			}
-		}
-	}
+				var grower = new Grow(this.x, this.z, 1, d[j], i, this.buffer.mode, this.adjustLandValue());
 }
 
 Zone.prototype.adjustLandValue = function() {
@@ -143,24 +136,24 @@ Zone.enoughDemand = function(mode, d) {
 }
 
 Zone.enoughSpace = function(a, b, o, d, newZone) {
-	var mode = Zone.zones[b][a].mode;
+	var mode = Zone.zones[b][a].buffer.mode;
 	for(var c = d -1; c >= 0; c--)
 	{	
 		switch (o) {
 			case 0:
-				if(!(Zone.zones[b][a -c] && Zone.zones[b][a -c].buffer && Zone.zones[b][a -c].mode === mode && !Grow.growers[b][a -c]))
+				if(!(Zone.zones[b][a -c] && Zone.zones[b][a -c].buffer && Zone.zones[b][a -c].buffer.mode === mode && !Grow.growers[b][a -c]))
 					return false;
 				break;
 			case 1:
-				if(!(Zone.zones[b +c][a] && Zone.zones[b +c][a].buffer && Zone.zones[b +c][a].mode === mode && !Grow.growers[b +c][a]))
+				if(!(Zone.zones[b +c][a] && Zone.zones[b +c][a].buffer && Zone.zones[b +c][a].buffer.mode === mode && !Grow.growers[b +c][a]))
 					return false;
 				break;
 			case 2:
-				if(!(Zone.zones[b][a +c] && Zone.zones[b][a +c].buffer && Zone.zones[b][a +c].mode === mode && !Grow.growers[b][a +c]))
+				if(!(Zone.zones[b][a +c] && Zone.zones[b][a +c].buffer && Zone.zones[b][a +c].buffer.mode === mode && !Grow.growers[b][a +c]))
 					return false;
 				break;
 			case 3:
-				if(!(Zone.zones[b -c][a] && Zone.zones[b -c][a].buffer && Zone.zones[b -c][a].mode === mode && !Grow.growers[b -c][a]))
+				if(!(Zone.zones[b -c][a] && Zone.zones[b -c][a].buffer && Zone.zones[b -c][a].buffer.mode === mode && !Grow.growers[b -c][a]))
 					return false;
 				break;
 		}

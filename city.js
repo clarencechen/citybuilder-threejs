@@ -4,7 +4,6 @@
 //	console.log('workers not supported!');
 
 function City () {
-	this.immigrationRate = 1e-7;
 	
 	this.birthRate = 5.078125e-5;
 	this.deathRate = 3.183594e-5;
@@ -22,25 +21,25 @@ function City () {
 	this.maxPopPerVariant = 5;
 	this.zones = [];
 	this.residents = 0;
-	this.demand = [10,0,0,0,0];
+	this.demand = [100,0,0,0,0];
 
 	this.addPop = function(type) {
 		var pop = 0;
 		Grow.list.forEach( function(loc, i) {
 			var x = loc%TERRAIN_SIZE;
 			var z = (loc/TERRAIN_SIZE)|0;
-			if((Grow.growers[z][x].mode/3)|0 === type +4)
+			if((Grow.growers[z][x].mode/3)|0 === (type +4))
 				pop += type === 0 ? Grow.growers[z][x].residents : Grow.growers[z][x].employees;
 		});
 		return pop;
 	}
-	this.addUnemployed = function (type) {
+	this.addUnemployed = function(type) {
 		var pop = 0;
 		Grow.list.forEach( function(loc, i) {
 			var x = loc%TERRAIN_SIZE;
 			var z = (loc/TERRAIN_SIZE)|0;
-			if((Grow.growers[z][x].mode/3)|0 === 4)//residential
-				pop += Grow.growers[z][x].unemployed[type -1];
+			if((Grow.growers[z][x].mode/3)|0 === 4)
+				pop += Grow.growers[z][x].unemployed[type];
 		});
 		return pop;
 	}
@@ -67,7 +66,8 @@ City.prototype.simulate = function() {
 	for(var i = 0; i < order0.length; i++)
 	{
 		var zone = Zone.zones[(order0[i]/TERRAIN_SIZE)|0][order0[i]%TERRAIN_SIZE];
-		zone.develop();
+		if(zone.buffer)
+			zone.develop();
 	}
 	for(var i = 0; i < order1.length; i++)
 	{
@@ -80,7 +80,7 @@ City.prototype.simulate = function() {
 			for(var j = 0; j < order2.length; j++)
 			{
 				var z2 = g[(order2[j]/TERRAIN_SIZE)|0][order2[j]%TERRAIN_SIZE];
-				var type = mode < 23 ? ((mode/3)|0) -4 : 4;
+				var type = z2.mode < 23 ? ((z2.mode/3)|0) -4 : 4;
 				if(/*commute(z1,z2) &&*/ type)
 					if(Math.random() < .95*(1 -this.taxes[type]))
 						z2.employ(z1);
@@ -151,18 +151,12 @@ City.prototype.simulate = function() {
 	}
 	this.residentialEarn += this.addPop(0)*this.taxes[0]*15;
 	this.officeEarn += this.addPop(2)*this.taxes[2]*30;
-
-	var poolGrowthRate = this.immigrationRate +this.birthRate -this.deathRate;
-	this.demand[0] *= 1 +poolGrowthRate;
+	//grow residential demand pool
+	this.demand[0] *= 1 +this.birthRate -this.deathRate;
 
 	this.residents = this.addPop(0) +this.demand[0];
 	$('#population').text('Population: ' + Math.floor(this.residents));
-
-	for(var i = 1; i < this.demand.length; i++)
-		this.demand[i] = this.addUnemployed(i);
 }
-
-
 
 function loadZones () {
 	var zones = Zone.zones;
