@@ -5,8 +5,8 @@
 
 function City () {
 	
-	this.birthRate = 2.0625e-4;
-	this.deathRate = 1.3125e-4;
+	this.birthRate = 2.0625e-4/2;
+	this.deathRate = 1.3125e-4/2;
 	this.propCanWork = 0.5;
 	
 	this.taxes = [0.1, 0.1, 0.1, 0.1, 0.1];
@@ -21,7 +21,7 @@ function City () {
 	this.maxPopPerVariant = 5;
 	this.zones = [];
 	this.residents = 0;
-	this.demand
+	this.demand = 100;
 	this.unemployed = [100,0,0,0,0];
 
 	this.addPop = function(type) {

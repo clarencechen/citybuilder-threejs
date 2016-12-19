@@ -259,9 +259,10 @@ Grow.prototype.employ = function(zone) {
 				expanded = this.expand();
 			if(!expanded)
 				this.grow();
-			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
 			//increase demand
-			city.demand += maxPop;
+			const newMaxPop = city.maxPopPerVariant*this.d*this.f << this.variant
+			city.demand += newMaxPop -maxPop;
+			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
 		}
 }
 Grow.prototype.house = function(rate) {
@@ -313,7 +314,8 @@ Grow.prototype.house = function(rate) {
 			if(!expanded)
 				this.grow();
 			//increase demand
-			city.demand += maxPop;
+			const newMaxPop = city.maxPopPerVariant*this.d*this.f << this.variant;
+			city.demand += newMaxPop -maxPop;
 			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
 		}
 }
