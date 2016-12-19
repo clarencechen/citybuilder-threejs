@@ -219,13 +219,13 @@ Grow.makeModel = function(x, z, f, d, o, mode, variant, demolish) {
 	return grownMesh;
 }
 Grow.prototype.employ = function(zone) {
-	var cityPool = city.demand;
+	var cityPool = city.unemployed;
 	var pool = zone.unemployed;
-	var type = this.mode < 23 ? ((this.mode/3)|0) -4 : 4
+	var type = this.mode < 23 ? ((this.mode/3)|0) -5 : 3;
 	const moveRate = 32;
 	const maxPop = this.variant !== 0 ? city.maxPopPerVariant*this.d*this.f << this.variant : 0;
 	var moving = 0;
-	/* If there is room, employ up to 32 people*/
+	// If there is room, employ up to 32 people
 	if(pool[type] >= 1)
 	{
 		moving = maxPop -this.employees;
@@ -237,7 +237,7 @@ Grow.prototype.employ = function(zone) {
 		cityPool[type] -= moving;
 		this.employees += moving;
 	}
-	/* Move population that cannot be sustained into the pool */
+	// Move population that cannot be sustained into the pool
 	if(this.employees > maxPop)
 	{
 		var extra = this.employees -maxPop;
@@ -245,8 +245,11 @@ Grow.prototype.employ = function(zone) {
 		cityPool[type] += extra;
 		moving -= extra;
 		this.employees = maxPop;
-		//demand decreases
+		//decrease demand
+		city.demand -= extra*extra/maxPop;
 	}
+	//increase residential demand
+	city.demand += moving*(moving/maxPop);
 	// Grow existing zones if there is enough demand
 	if(cityPool[type] > maxPop && this.variant < this.maxVariants)
 		if(Math.random()*(1 << 24) < 1 << (18 -this.variant +this.llv))
@@ -257,50 +260,51 @@ Grow.prototype.employ = function(zone) {
 			if(!expanded)
 				this.grow();
 			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
-//			cityPool[0] += maxPop;
+			//increase demand
+			city.demand += maxPop;
 		}
 }
 Grow.prototype.house = function(rate) {
-	var pool = city.demand;
+	var pool = city.unemployed;
 	var moveRate = 64;
 	const maxPop = this.variant !== 0 ? city.maxPopPerVariant*this.d*this.f << this.variant : 0;
-	/* If there is room, move up to 64 people*/
-	if(pool[0] >= 1)
+	//If there is room, move up to 64 people
+	if(city.demand >= 1)
 	{
 		var moving = maxPop -this.residents;
 		if(moving > moveRate)
 			moving = moveRate;
-		if(moving > pool[0])
-			moving = pool[0];
-		pool[0] -= moving;
+		if(moving > city.demand)
+			moving = city.demand;
+		city.demand -= moving;
 		this.residents += moving;
 		for(var i = 0; i < this.unemployed.length; i++)
 		{
 			this.unemployed[i] += moving*city.propCanWork*this.empSplit[i];
-			pool[i +1] += moving*city.propCanWork*this.empSplit[i];
+			pool[i] += moving*city.propCanWork*this.empSplit[i];
 		}
 	}
-	/* Adjust the population for births and deaths */
+	// Adjust the population for births and deaths
 	this.residents *= 1 +rate;
 	for(var i = 0; i < this.unemployed.length; i++)
 		this.unemployed[i] *= 1 +rate;
-	/* Move population that cannot be sustained into the pool */
+	// Move population that cannot be sustained into the pool
 	if(this.residents > maxPop)
 	{
 		var extra = this.residents -maxPop;
-		pool[0] += extra;
+		city.demand += extra;
 		moving -= extra;
 		this.residents = maxPop;
 		for(var i = 0; i < this.unemployed.length; i++)
 		{
-			pool[i +1] -= this.unemployed[i]*extra/this.residents;
+			pool[i] -= this.unemployed[i]*extra/this.residents;
 			this.unemployed[i] *= 1 -extra/this.residents;
 		}
-		//demand decreases
-		pool[0] -= extra*extra/maxPop;
+		//decrease demand
+		city.demand -= extra*extra/maxPop;
 	}
 	// Grow existing zones if there is enough demand
-	if(pool[0] > maxPop && this.variant < this.maxVariants)
+	if(city.demand > maxPop && this.variant < this.maxVariants)
 		if(Math.random()*(1 << 24) < 1 << (18 -this.variant +this.llv))
 		{
 			var expanded = false;
@@ -308,7 +312,8 @@ Grow.prototype.house = function(rate) {
 				expanded = this.expand();
 			if(!expanded)
 				this.grow();
-			pool[0] += maxPop;
+			//increase demand
+			city.demand += maxPop;
 			this.llv = Zone.zones[this.z][this.x].adjustLandValue();
 		}
 }

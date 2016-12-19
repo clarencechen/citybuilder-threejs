@@ -5,8 +5,8 @@
 
 function City () {
 	
-	this.birthRate = 5.078125e-5;
-	this.deathRate = 3.183594e-5;
+	this.birthRate = 2.0625e-4;
+	this.deathRate = 1.3125e-4;
 	this.propCanWork = 0.5;
 	
 	this.taxes = [0.1, 0.1, 0.1, 0.1, 0.1];
@@ -21,7 +21,8 @@ function City () {
 	this.maxPopPerVariant = 5;
 	this.zones = [];
 	this.residents = 0;
-	this.demand = [100,0,0,0,0];
+	this.demand
+	this.unemployed = [100,0,0,0,0];
 
 	this.addPop = function(type) {
 		var pop = 0;
@@ -145,16 +146,16 @@ City.prototype.simulate = function() {
 			}
 			/* Calculate the overall revenue for the tile. */
 			z1.production = (receivedGoods +Math.random()/10)*(1.0 -this.taxes[1]);
-			z1.revenue = 100*z1.production*maxCustomers;
-			this.commercialEarn += 100*(receivedGoods +Math.random()/10)*this.taxes[1]*maxCustomers;
+			z1.revenue = 100*z1.production*maxCustomers*(Math.random() +1)/2;
+			this.commercialEarn += 100*this.taxes[1]*(receivedGoods +Math.random()/10)*maxCustomers*(Math.random() +1)/2;
 		}
 	}
 	this.residentialEarn += this.addPop(0)*this.taxes[0]*15;
 	this.officeEarn += this.addPop(2)*this.taxes[2]*30;
 	//grow residential demand pool
-	this.demand[0] *= 1 +this.birthRate -this.deathRate;
+	this.demand *= 1 +this.birthRate -this.deathRate;
 
-	this.residents = this.addPop(0) +this.demand[0];
+	this.residents = this.addPop(0) +this.demand;
 	$('#population').text('Population: ' + Math.floor(this.residents));
 }
 

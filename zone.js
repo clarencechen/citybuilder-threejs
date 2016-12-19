@@ -131,7 +131,7 @@ Zone.prototype.adjustLandValue = function() {
 }
 
 Zone.enoughDemand = function(mode, d) {
-	var pool = mode < 23 ? city.demand[((mode/3)|0) -4] : city.demand[4];
+	var pool = mode >= 15 ? (mode === 23 ? city.unemployed[3] : city.unemployed[((mode/3)|0) -5]) : city.demand;
 	return pool > city.maxPopPerVariant*d;
 }
 
