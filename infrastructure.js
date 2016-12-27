@@ -178,12 +178,13 @@ function placeRoadPreview(current, anchor, revert, mode, h) {
 
 function zoneTile(x, z, mode, preview, demolish, hide) {
 	var road = Road.roads[z][x];
+//	var bridge = 
 	var plop = Plop.plops[z][x];
 	var zone = Zone.zones[z][x];
 	var grow = Grow.growers[z][x];
 	if(!demolish && ((plop && !plop.preview) || (road && road.buffer)))
 	{
-		console.log("Not enough space to zone tile!");
+		//console.log("Not enough space to zone tile!");
 		return;
 	}
 	else if(zone)
@@ -287,11 +288,6 @@ function placeRoadSegment(x, z, capacity, preview, demolish, y) {
 	var road = y === null || y === undefined ? Road.roads[z][x] : Road.bridges[z][x][y];
 	var plop = Plop.plops[z][x];
 	var zone = Zone.zones[z][x];
-//	if(plop && !demolish)
-//	{
-//		console.log("Not enough space to lay road!")
-//		return;
-//	}
 	if(road)//there is a road at specified x and z
 	{
 		if(!preview && demolish)
@@ -319,12 +315,12 @@ function placeRoadSegment(x, z, capacity, preview, demolish, y) {
 }
 
 function resetDevelopment (x, z, preview) {
-	 var grow = Grow.growers[z][x];
-	 if(grow)
-	 	if(preview)
-	 		grow.updateModel(true);
-	 	else
-	 		grow.del();
+	var grow = Grow.growers[z][x];
+	if(grow)
+		if(preview)
+			grow.updateModel(true);
+		else
+			grow.del();
 }
 
 function revertZoneTile(x, z) {
