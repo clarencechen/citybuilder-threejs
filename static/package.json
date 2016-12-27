@@ -1,0 +1,22 @@
+{
+  "name": "freecity",
+  "version": "1.0.0",
+  "description": "An open-source citybuilding game.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clarencechen/citybuilder-threejs.git"
+  },
+  "keywords": [
+    "citybuilder"
+  ],
+  "author": "Clarence Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clarencechen/citybuilder-threejs/issues"
+  },
+  "homepage": "https://github.com/clarencechen/citybuilder-threejs#readme"
+}
