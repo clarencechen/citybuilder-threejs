@@ -1,0 +1,22 @@
+{
+  "name": "citybuilder-threejs",
+  "version": "1.0.0",
+  "description": "A free, open-source citybuilding game.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clarencechen/citybuilder-threejs.git"
+  },
+  "keywords": [
+    "citybuilding"
+  ],
+  "author": "Clarence Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clarencechen/citybuilder-threejs/issues"
+  },
+  "homepage": "https://github.com/clarencechen/citybuilder-threejs#readme"
+}
