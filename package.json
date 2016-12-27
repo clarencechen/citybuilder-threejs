@@ -4,7 +4,7 @@
   "description": "A free, open-source citybuilding game.",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node main.js"
   },
   "repository": {
     "type": "git",
